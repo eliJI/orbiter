@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "orbiter simulation",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "rollup -c --bundleConfigAsCjs && http-server ./"
+    "start": "rollup -c && http-server ./",
+    "watch": "watch 'rollup -c && http-server' ./src"
   },
   "author": "",
   "license": "ISC",
@@ -14,7 +16,8 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.5",
     "rollup-plugin-polyfill-node": "^0.12.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "watch": "^1.0.2"
   },
   "dependencies": {
     "copy-webpack-plugin": "^11.0.0",
