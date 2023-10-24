@@ -15,9 +15,9 @@ let width = window.innerWidth;
 let height = window.innerHeight;
 //constant radius
 const CENTER_X = width/2;
-const CENTER_Y = height/2
+const CENTER_Y = height/2;
 //document setup
-const app = new PIXI.Application<HTMLCanvasElement>({width: width, height: height});
+const app = new PIXI.Application<HTMLCanvasElement>({antialias: true, width: width, height: height});
 document.body.appendChild(app.view);
 
 class Planet {
@@ -25,18 +25,31 @@ class Planet {
     theta: number = 0;
     radius: number;
     circle: PIXI.Graphics;
+    path: PIXI.Graphics;
 
 
     constructor(degreesPerTick: number, radius: number) {
         this.degreesPerTick = degreesPerTick;
         this.radius = radius;
         this.circle = new PIXI.Graphics();
+        this.path = new PIXI.Graphics();
     }
 
     init() {
+        //the path
+        this.path.lineStyle(2,0xffffff,0.5,0.5);
+        this.path.drawCircle(CENTER_X, CENTER_Y, this.radius);
+        this.path.endFill();
+        app.stage.addChild(this.path);
+
+        //planet drawing
         this.circle.beginFill(0x4287f5);
         this.circle.drawCircle(0, 0, 10);
+        this.circle.endFill();
         app.stage.addChild(this.circle);
+        
+      
+        
     }
 
     draw() {
@@ -46,13 +59,40 @@ class Planet {
     }
 }
 
-let center = new PIXI.Graphics()
-center.beginFill(0x4287f5);
-center.drawCircle(CENTER_X, CENTER_Y, 20)
-app.stage.addChild(center);
+//generates planets with a varaible scale and radius
+function generatePlanets(planets: Map<string, number>, scale: number, radius: number): Planet[] {
+    let scaledPlanets: Planet[] = [];
+    let distancemod = 0;
+    let distance = 10 + radius;
+    planets.forEach((value, key) =>{
+        let degreesPerTick = (360 / value) * scale;
+        scaledPlanets.push(new Planet(degreesPerTick, distance));
+        distance += radius + distancemod;
+        distancemod += 10;
 
-let planet = new Planet(.05, 80);
-planet.init();
+    });
+    console.log(scaledPlanets);
+    return scaledPlanets;
+}
+
+//sun from texture 
+let sun = PIXI.Sprite.from("textures/suntexture.png");
+sun.anchor.set(0.5,0.5);
+sun.scale.set(0.5);
+sun.position.set(CENTER_X, CENTER_Y);
+app.stage.addChild(sun);
+
+//generating planets objects
+let planets = generatePlanets(orbitTimes,.01,50);
+
+//initializing the planet
+planets.forEach((planet) => {
+    planet.init();
+})
+
+//main render loop
 app.ticker.add(() => {
-    planet.draw();
+    planets.forEach((planet) => {
+        planet.draw()
+    })
 });
