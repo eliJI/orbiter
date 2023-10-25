@@ -1,15 +1,49 @@
 import * as PIXI from 'pixi.js';
 
-const orbitTimes = new Map<string, number>;
-orbitTimes.set('mercury', 88);
-orbitTimes.set('venus', 225);
-orbitTimes.set('earth', 365);
-orbitTimes.set('mars', 687);
-orbitTimes.set('jupiter', 4333);
-orbitTimes.set('saturn', 10759);
-orbitTimes.set('uranus', 30687);
-orbitTimes.set('neptune', 60190);
+//orbital body data
+const planetaryData: planetData[] = [
+    {
+        name: 'mercury',
+        days:  88,
+        color: 0x63615e,
+    },
+    {
+        name: 'venus',
+        days: 225,
+        color: 0xe6939b
+    },
+    {
+        name: 'earth',
+        days: 365,
+        color: 0xa0e39f
+    },
+    {
+        name: 'mars',
+        days: 687,
+        color: 0x7a1806
+    },
+    {
+        name: 'jupiter',
+        days: 4333,
+        color: 0x857d63
+    },
+    {
+        name: 'saturn',
+        days: 10759,
+        color: 0xffe07d
+    },
+    {
+        name: 'uranus',
+        days: 30687,
+        color: 0x8dd1e0
+    },
+    {
+        name: 'neptune',
+        days: 60190,
+        color: 0x4d60bf
+    }
 
+]
 //window width and height
 let width = window.innerWidth;
 let height = window.innerHeight;
@@ -24,26 +58,28 @@ class Planet {
     degreesPerTick: number;
     theta: number = 0;
     radius: number;
+    color: number
     circle: PIXI.Graphics;
     path: PIXI.Graphics;
 
 
-    constructor(degreesPerTick: number, radius: number) {
+    constructor(degreesPerTick: number, radius: number, color: number) {
         this.degreesPerTick = degreesPerTick;
         this.radius = radius;
         this.circle = new PIXI.Graphics();
         this.path = new PIXI.Graphics();
+        this.color = color;
     }
 
     init() {
         //the path
-        this.path.lineStyle(2,0xffffff,0.5,0.5);
+        this.path.lineStyle(2,this.color,0.4,0.5);
         this.path.drawCircle(CENTER_X, CENTER_Y, this.radius);
         this.path.endFill();
         app.stage.addChild(this.path);
 
         //planet drawing
-        this.circle.beginFill(0x4287f5);
+        this.circle.beginFill(this.color);
         this.circle.drawCircle(0, 0, 10);
         this.circle.endFill();
         app.stage.addChild(this.circle);
@@ -59,14 +95,20 @@ class Planet {
     }
 }
 
+interface planetData {
+    name: string,
+    days: number,
+    color: number,
+}
+
 //generates planets with a varaible scale and radius
-function generatePlanets(planets: Map<string, number>, scale: number, radius: number): Planet[] {
+function generatePlanets(planets: planetData[], scale: number, radius: number): Planet[] {
     let scaledPlanets: Planet[] = [];
     let distancemod = 0;
     let distance = 10 + radius;
-    planets.forEach((value, key) =>{
-        let degreesPerTick = (360 / value) * scale;
-        scaledPlanets.push(new Planet(degreesPerTick, distance));
+    planets.forEach(planet =>{
+        let degreesPerTick = (360 / planet.days) * scale;
+        scaledPlanets.push(new Planet(degreesPerTick, distance, planet.color));
         distance += radius + distancemod;
         distancemod += 10;
 
@@ -76,14 +118,14 @@ function generatePlanets(planets: Map<string, number>, scale: number, radius: nu
 }
 
 //sun from texture 
-let sun = PIXI.Sprite.from("textures/suntexture.png");
-sun.anchor.set(0.5,0.5);
-sun.scale.set(0.5);
+let sun = new PIXI.Graphics();
+sun.beginFill(0xffb300);
+sun.drawCircle(0,0,30);
 sun.position.set(CENTER_X, CENTER_Y);
 app.stage.addChild(sun);
 
 //generating planets objects
-let planets = generatePlanets(orbitTimes,.01,50);
+let planets = generatePlanets(planetaryData,.01,50);
 
 //initializing the planet
 planets.forEach((planet) => {
