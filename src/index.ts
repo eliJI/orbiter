@@ -82,6 +82,7 @@ class Planet {
         this.circle.beginFill(this.color);
         this.circle.drawCircle(0, 0, 10);
         this.circle.endFill();
+        app.stage.addChild(this.circle);
     }
     // if local x and y are passed, we use that as the local center instead 
     draw() {
