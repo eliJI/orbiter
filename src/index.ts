@@ -51,16 +51,17 @@ let height = window.innerHeight;
 const CENTER_X = width/2;
 const CENTER_Y = height/2;
 //document setup
-const app = new PIXI.Application<HTMLCanvasElement>({antialias: true, width: width, height: height});
+const app = new PIXI.Application<HTMLCanvasElement>({hello: true, antialias: true, width: width, height: height});
 document.body.appendChild(app.view);
 
 class Planet {
     degreesPerTick: number;
-    theta: number = 0;
+    theta = 0;
     radius: number;
     color: number
     circle: PIXI.Graphics;
     path: PIXI.Graphics;
+    moons: Planet[];
 
 
     constructor(degreesPerTick: number, radius: number, color: number) {
@@ -69,6 +70,7 @@ class Planet {
         this.circle = new PIXI.Graphics();
         this.path = new PIXI.Graphics();
         this.color = color;
+        this.moons = [];
     }
 
     init() {
@@ -82,16 +84,18 @@ class Planet {
         this.circle.beginFill(this.color);
         this.circle.drawCircle(0, 0, 10);
         this.circle.endFill();
-        app.stage.addChild(this.circle);
-        
-      
-        
     }
-
-    draw() {
-        this.circle.x = CENTER_X + this.radius * Math.cos(this.theta)
-        this.circle.y = CENTER_Y + this.radius * Math.sin(this.theta);
-        this.theta = this.theta + this.degreesPerTick;
+    // if local x and y are passed, we use that as the local center instead 
+    draw(local_center_x?: number, local_center_y?: number) {
+        if (local_center_x !== undefined && local_center_y !== undefined) {
+            this.circle.x = CENTER_X + this.radius * Math.cos(this.theta)
+            this.circle.y = CENTER_Y + this.radius * Math.sin(this.theta);
+            this.theta = this.theta + this.degreesPerTick;
+        } else {
+            this.moons.forEach((moon) => {
+                moon.draw(this.circle.x, this.circle.y)
+            });
+        }
     }
 }
 
