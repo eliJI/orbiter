@@ -61,7 +61,6 @@ class Planet {
     color: number
     circle: PIXI.Graphics;
     path: PIXI.Graphics;
-    moons: Planet[];
 
 
     constructor(degreesPerTick: number, radius: number, color: number) {
@@ -70,7 +69,6 @@ class Planet {
         this.circle = new PIXI.Graphics();
         this.path = new PIXI.Graphics();
         this.color = color;
-        this.moons = [];
     }
 
     init() {
