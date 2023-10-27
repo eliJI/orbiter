@@ -84,7 +84,7 @@ class Planet {
         this.circle.endFill();
     }
     // if local x and y are passed, we use that as the local center instead 
-    draw(local_center_x?: number, local_center_y?: number) {
+    draw() {
         this.circle.x = CENTER_X + this.radius * Math.cos(this.theta)
         this.circle.y = CENTER_Y + this.radius * Math.sin(this.theta);
         this.theta = this.theta + this.degreesPerTick;
