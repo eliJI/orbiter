@@ -51,7 +51,7 @@ let height = window.innerHeight;
 const CENTER_X = width/2;
 const CENTER_Y = height/2;
 //document setup
-const app = new PIXI.Application<HTMLCanvasElement>({hello: true, antialias: true, width: width, height: height});
+const app = new PIXI.Application<HTMLCanvasElement>({antialias: true, width: width, height: height});
 document.body.appendChild(app.view);
 
 class Planet {
