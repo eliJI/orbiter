@@ -87,15 +87,10 @@ class Planet {
     }
     // if local x and y are passed, we use that as the local center instead 
     draw(local_center_x?: number, local_center_y?: number) {
-        if (local_center_x !== undefined && local_center_y !== undefined) {
-            this.circle.x = CENTER_X + this.radius * Math.cos(this.theta)
-            this.circle.y = CENTER_Y + this.radius * Math.sin(this.theta);
-            this.theta = this.theta + this.degreesPerTick;
-        } else {
-            this.moons.forEach((moon) => {
-                moon.draw(this.circle.x, this.circle.y)
-            });
-        }
+        this.circle.x = CENTER_X + this.radius * Math.cos(this.theta)
+        this.circle.y = CENTER_Y + this.radius * Math.sin(this.theta);
+        this.theta = this.theta + this.degreesPerTick;
+        
     }
 }
 
