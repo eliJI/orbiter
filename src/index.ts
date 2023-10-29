@@ -61,6 +61,7 @@ class Planet {
     color: number
     circle: PIXI.Graphics;
     path: PIXI.Graphics;
+    satellites: Planet[] = [];
 
 
     constructor(degreesPerTick: number, radius: number, color: number) {
@@ -71,10 +72,10 @@ class Planet {
         this.color = color;
     }
 
-    init() {
-        //the path
+    init(relative_center_x: number, relative_center_y: number) {
+        //orbit path
         this.path.lineStyle(2,this.color,0.4,0.5);
-        this.path.drawCircle(CENTER_X, CENTER_Y, this.radius);
+        this.path.drawCircle(relative_center_x, relative_center_y, this.radius);
         this.path.endFill();
         app.stage.addChild(this.path);
 
@@ -82,15 +83,49 @@ class Planet {
         this.circle.beginFill(this.color);
         this.circle.drawCircle(0, 0, 10);
         this.circle.endFill();
-        app.stage.addChild(this.circle);
+
+        //satellite orbit path
+        this.satellites.forEach(satellite => {
+            this.circle.lineStyle(1,satellite.color,0.4,0.5);
+            this.circle.drawCircle(0,0,satellite.radius)
+            this.circle.endFill();
+        });
+
+        app.stage.addChild(this.circle);    
+        //move to default position
+        this.circle.x = relative_center_x + this.radius * Math.cos(0)
+        this.circle.y = relative_center_y + this.radius * Math.sin(0);
+
     }
-    // if local x and y are passed, we use that as the local center instead 
-    draw() {
-        this.circle.x = CENTER_X + this.radius * Math.cos(this.theta)
-        this.circle.y = CENTER_Y + this.radius * Math.sin(this.theta);
+
+    draw(relative_center_x: number, relative_center_y: number) {
+        this.circle.x = relative_center_x + this.radius * Math.cos(this.theta)
+        this.circle.y = relative_center_y + this.radius * Math.sin(this.theta);
         this.theta = this.theta + this.degreesPerTick;
-        
+
+        this.satellites.forEach(satellite => {
+            satellite.draw(this.circle.x, this.circle.y);
+        });
     }
+}
+
+class Satellite extends Planet {
+    constructor(degreesPerTick: number, radius: number, color: number) {
+        super(degreesPerTick,radius,color);
+    }
+    init(relative_center_x: number, relative_center_y: number) {
+   
+        //planet drawing
+        this.circle.beginFill(this.color);
+        this.circle.drawCircle(0, 0, 5);
+        this.circle.endFill();
+        app.stage.addChild(this.circle);    
+        //move to default position
+        this.circle.x = relative_center_x + this.radius * Math.cos(0)
+        this.circle.y = relative_center_y + this.radius * Math.sin(0);
+
+    }
+
 }
 
 interface planetData {
@@ -125,14 +160,22 @@ app.stage.addChild(sun);
 //generating planets objects
 let planets = generatePlanets(planetaryData,.01,50);
 
+let test_satellite = new Satellite(0.13, 30, 0xffc0cb);
+planets[2].satellites.push(test_satellite);
 //initializing the planet
 planets.forEach((planet) => {
-    planet.init();
+    planet.init(CENTER_X, CENTER_Y);
+    planet.satellites.forEach(satellite => {
+        satellite.init(planet.circle.x, planet.circle.y);
+    });
 })
 
 //main render loop
 app.ticker.add(() => {
     planets.forEach((planet) => {
-        planet.draw()
+        planet.draw(CENTER_X, CENTER_Y);
+        //planet.satellites.forEach(satellite => {
+            //satellite.draw(planet.circle.x, planet.circle.y);
+        //});
     })
 });
